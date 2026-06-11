@@ -1,6 +1,6 @@
 {
   "name": "pi-references",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Pi extension that adds OpenCode-style references: local directories and Git repositories as agent context.",
   "keywords": [
     "pi-extension",

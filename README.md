@@ -77,6 +77,9 @@ Reference aliases cannot be empty or contain `/`, whitespace, backticks, or comm
 
 - The agent sees described references in its system prompt and reads files from them when relevant.
 - `/references` lists all configured references with their kind, state, and resolved directory.
+- `/references add <alias> <path-or-repository>` writes a project reference to `.pi/references.json`.
+  - Add `--global` to write `~/.pi/agent/references.json` instead.
+  - Add `--branch <ref>` for Git refs and `--description "..."` to advertise usage guidance.
 - `/references update` fetches and hard-resets all materialized git caches to the remote state.
 - `write`/`edit` tool calls into a git reference cache are blocked — caches are read-only; edit the upstream repository instead.
 

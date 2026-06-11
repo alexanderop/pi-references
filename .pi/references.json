@@ -1,0 +1,9 @@
+{
+  "references": {
+    "pi": {
+      "repository": "https://github.com/earendil-works/pi.git",
+      "branch": "main",
+      "description": "Use for pi SDK, extension APIs, runtime behavior, and implementation details."
+    }
+  }
+}

@@ -211,6 +211,58 @@ describe("setupReferencesExtension", () => {
     expect(ctx.ui.notify).toHaveBeenCalledWith(expect.stringContaining("docs"), "info");
   });
 
+  it("adds a project reference via /references add", async () => {
+    const { pi, emit, commands } = createFakePi();
+    setupReferencesExtension(pi, options);
+    const ctx = createCtx(projectDir);
+    await emit("session_start", { reason: "startup" }, ctx);
+
+    await commands.get("references")?.handler('add docs ../docs --description "Use for docs"', ctx);
+
+    const file = path.join(projectDir, ".pi", "references.json");
+    const config = JSON.parse(fs.readFileSync(file, "utf8")) as {
+      references: { docs: { path: string; description: string } };
+    };
+    expect(config.references.docs).toEqual({ path: "../docs", description: "Use for docs" });
+    expect(ctx.ui.notify).toHaveBeenCalledWith(expect.stringContaining("added local"), "info");
+
+    await commands.get("references")?.handler(undefined, ctx);
+    expect(ctx.ui.notify).toHaveBeenCalledWith(expect.stringContaining("Use for docs"), "info");
+  });
+
+  it("adds a global git reference and starts materializing it", async () => {
+    const { pi, emit, commands } = createFakePi();
+    setupReferencesExtension(pi, options);
+    const ctx = createCtx(projectDir);
+    await emit("session_start", { reason: "startup" }, ctx);
+
+    await commands
+      .get("references")
+      ?.handler("add effect Effect-TS/effect --global --branch main", ctx);
+    await flushBackgroundWork();
+
+    const file = path.join(homeDir, ".pi", "agent", "references.json");
+    const config = JSON.parse(fs.readFileSync(file, "utf8")) as {
+      references: { effect: { repository: string; branch: string } };
+    };
+    expect(config.references.effect).toEqual({ repository: "Effect-TS/effect", branch: "main" });
+    expect(options.ensureClone).toHaveBeenCalledWith(
+      expect.objectContaining({ url: "https://github.com/Effect-TS/effect.git", branch: "main" }),
+    );
+  });
+
+  it("rejects invalid add reference arguments", async () => {
+    const { pi, emit, commands } = createFakePi();
+    setupReferencesExtension(pi, options);
+    const ctx = createCtx(projectDir);
+    await emit("session_start", { reason: "startup" }, ctx);
+
+    await commands.get("references")?.handler("add bad/alias ../docs", ctx);
+
+    expect(ctx.ui.notify).toHaveBeenCalledWith(expect.stringContaining("alias"), "error");
+    expect(fs.existsSync(path.join(projectDir, ".pi", "references.json"))).toBe(false);
+  });
+
   it("updates existing git caches via /references update", async () => {
     writeConfig({ references: { effect: "Effect-TS/effect" } });
     const cacheDir = path.join(
