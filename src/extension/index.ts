@@ -36,10 +36,14 @@ export function setupReferencesExtension(pi: ExtensionAPI, options: ExtensionOpt
   }
 
   pi.on("session_start", async (_event, ctx) => {
+    // pi < 0.79 has no ctx.isProjectTrusted(); those versions have no granular
+    // trust API at all, so fall back to trusting the project like they do.
+    const projectTrusted =
+      typeof ctx.isProjectTrusted === "function" ? ctx.isProjectTrusted() : true;
     const result = loadReferences({
       cwd: ctx.cwd,
       homeDir: options.homeDir,
-      projectTrusted: ctx.isProjectTrusted(),
+      projectTrusted,
     });
     references = result.references;
     for (const error of result.errors) {
