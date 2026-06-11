@@ -1,0 +1,48 @@
+{
+  "name": "pi-references",
+  "version": "0.1.0",
+  "description": "Pi extension that adds OpenCode-style references: local directories and Git repositories as agent context.",
+  "keywords": [
+    "pi-extension",
+    "pi-package",
+    "references"
+  ],
+  "license": "MIT",
+  "files": [
+    "src"
+  ],
+  "type": "module",
+  "imports": {
+    "#src/*": "./src/*"
+  },
+  "scripts": {
+    "check": "tsc --noEmit",
+    "fmt": "oxfmt package.json tsconfig.json vitest.config.ts .oxlintrc.json .oxfmtrc.json src test",
+    "fmt:check": "oxfmt --check package.json tsconfig.json vitest.config.ts .oxlintrc.json .oxfmtrc.json src test",
+    "lint": "oxlint src test",
+    "lint:fix": "oxlint --fix src test",
+    "pi": "pi --no-extensions -e .",
+    "test": "vitest --run",
+    "test:coverage": "vitest --run --coverage",
+    "verify": "pnpm run check && pnpm run lint && pnpm run fmt:check && pnpm test"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "@vitest/coverage-v8": "^4.1.7",
+    "oxfmt": "^0.53.0",
+    "oxlint": "^1.68.0",
+    "typescript": "^5.9.0",
+    "vitest": "^4.1.7"
+  },
+  "peerDependencies": {
+    "@earendil-works/pi-coding-agent": "*"
+  },
+  "engines": {
+    "node": ">=22.19.0"
+  },
+  "pi": {
+    "extensions": [
+      "./src/extension/index.ts"
+    ]
+  }
+}

@@ -1,0 +1,57 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "categories": {
+    "correctness": "error",
+    "suspicious": "warn"
+  },
+  "env": {
+    "node": true
+  },
+  "ignorePatterns": ["node_modules/**", "repos/**", "coverage/**"],
+  "plugins": ["unicorn", "typescript", "oxc", "import", "promise", "node", "vitest"],
+  "overrides": [
+    {
+      "files": ["src/**/*.ts"],
+      "rules": {
+        "import/no-relative-parent-imports": "error"
+      }
+    },
+    {
+      "files": ["src/references/**/*.ts"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": ["#src/extension/*"],
+                "message": "src/references (domain core) must not import from src/extension (outer layer); the allowed dependency direction is extension -> references."
+              },
+              {
+                "group": ["@earendil-works/*"],
+                "message": "src/references (domain core) must stay Pi-SDK-free; keep Pi adapters under src/extension."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": ["**/*.test.ts"],
+      "rules": {
+        "vitest/no-standalone-expect": "error",
+        "vitest/expect-expect": "error"
+      }
+    }
+  ],
+  "rules": {
+    "eqeqeq": "error",
+    "no-implicit-coercion": "error",
+    "no-implied-eval": "error",
+    "no-new-func": "error",
+    "no-throw-literal": "error",
+    "no-var": "error",
+    "prefer-const": "error",
+    "typescript/no-explicit-any": "error"
+  }
+}
